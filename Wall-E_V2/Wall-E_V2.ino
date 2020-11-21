@@ -6,13 +6,12 @@
 #include <Adafruit_PWMServoDriver.h>
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
-
 // MP3 Player
 #include "SoftwareSerial.h"
 SoftwareSerial serialPlayer(10, 11);
 
 // Bluetooth Wall-E
-SoftwareSerial serialWalle(2, 3); // RX, TX
+//SoftwareSerial serialWalle(2, 3); // RX, TX
 
 # define Start_Byte 0x7E
 # define Version_Byte 0xFF
@@ -44,6 +43,9 @@ boolean isPlaying = false;
 // Motor B
 #define in3 5
 #define in4 4
+
+#define buttonPin 0
+int buttonState = 0;
 
 // Servo's last position
 int s1LastPos = 0;
@@ -79,25 +81,27 @@ String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 String commandString = "";
 
-const int buttonPin = A1;
+//const int buttonPin = A1;
 
 void setup() 
 {  
   Serial.begin(9600);
   serialPlayer.begin (9600);
-  serialWalle.begin (9600);
+  //serialWalle.begin (9600);
 
   // Setup PWM Controller object
   pwm.begin();
   pwm.setPWMFreq(FREQUENCY);
   
   pinMode(ledPin,OUTPUT);
+
+  pinMode(buttonPin, INPUT);  // or use INPUT_PULLUP (pull down resistor)
   
   //pinMode(interruptPin, INPUT_PULLUP);
   //attachInterrupt(digitalPinToInterrupt(interruptPin), ButtonClickedISR, CHANGE); 
   
   //initDisplay();
-  serialWalle.println("Connected");
+  Serial.println("Connected");
   
   delay(500);
 
@@ -226,19 +230,20 @@ void InitializeWallE()
 }
 
 void ButtonDemo()
-{
-  if (analogRead(buttonPin) == HIGH)
-  {
-    Demo1();
+{ 
+  // read the state of the pushbutton value:
+   buttonState = digitalRead(buttonPin);
 
-    // Avoid debouncing
-    delay(200);
-  }
+   // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
+   if (buttonState == LOW) 
+   {
+      Demo1();
+   }  
 }
 
 void Demo1()
 {
-  serialWalle.println("Programma 1");
+  Serial.println("Programma 1");
 
   // Led ogen aan
   analogWrite(ledPin, 10);  
@@ -305,20 +310,20 @@ void Ogen()
 
 void PrintText(String melding)
 {
-  serialWalle.println(melding);
+  Serial.println(melding);
 }
 
 void ZetGeluidAanUit()
 {
   if (!isPlaying)
   {
-    serialWalle.println("Geluid aan");
+    Serial.println("Geluid aan");
     PlayFirst();
     isPlaying = true;
   }
   else
   {
-    serialWalle.println("Geluid uit");
+    Serial.println("Geluid uit");
     Pause();
     isPlaying = false;
   }  
@@ -378,7 +383,7 @@ void MotorAction(bool a, bool b, bool c, bool d, String melding)
   digitalWrite(in4, d);    
   
   // Stuur een bericht naar de computer terug. 
-  serialWalle.println(melding);
+  Serial.println(melding);
 }
 
 // Function to move servo to specific position
@@ -420,7 +425,7 @@ int ServoPWMRange(int servoOut, int pos1, int pos2, int interval)
   // Bepaal of de Servo positie oplopend of aflopen is
   if (pos1 <= pos2)
   {
-    serialWalle.println("1- Pos1 : " + String(pos1));
+    Serial.println("1- Pos1 : " + String(pos1));
     for (int i = pos1; i <= pos2; i++)
     {
       ServoPWM(servoOut, i);
@@ -429,7 +434,7 @@ int ServoPWMRange(int servoOut, int pos1, int pos2, int interval)
   }
   else if (pos1 > pos2)
   {
-    serialWalle.println("2 - Pos1 : " + String(pos1));
+    Serial.println("2 - Pos1 : " + String(pos1));
     for (int i = pos1; i >= pos2; i--)
     {
       ServoPWM(servoOut, i);
@@ -497,10 +502,10 @@ String GetTextToPrint()
 
 void serialEvent() 
 {
-  while (serialWalle.available()) 
+  while (Serial.available()) 
   {
     // get the new byte:
-    char inChar = (char)serialWalle.read();
+    char inChar = (char)Serial.read();
   
     // add it to the inputString:
     inputString += inChar;
@@ -517,7 +522,7 @@ void serialEvent()
 void ButtonClickedISR()
 {
   // Stuur een bericht naar de computer terug. 
-  serialWalle.println("Button clicked.");
+  Serial.println("Button clicked.");
   Demo1();
 }
 
@@ -578,7 +583,7 @@ void PrintVoltage()
   if (currentMillis - previousMillis >= interval)
   {
     float voltage = readVoltage();
-    serialWalle.println("Voltage : " + String(voltage));
+    Serial.println("Voltage : " + String(voltage));
     
     previousMillis = currentMillis;
   }
