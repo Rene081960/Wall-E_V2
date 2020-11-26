@@ -1,4 +1,4 @@
-// Project staat op GitHub : https://github.com/Rene081960/Wall-E
+// Project staat op GitHub : https://github.com/Rene081960/Wall-E_V2
 //
 // PWM pins : Uno, Nano, Mini  3, 5, 6, 9, 10, 11   490 Hz (pins 5 and 6: 980 Hz)
 
@@ -44,8 +44,8 @@ boolean isPlaying = false;
 #define in3 5
 #define in4 4
 
-#define buttonPin 0
-int buttonState = 0;
+#define buttonPin 2
+int buttonState = 0; 
 
 // Servo's last position
 int s1LastPos = 0;
@@ -72,7 +72,7 @@ long previousMillis = 0;
 long interval = 5000;  // Check om de 1 seconde het voltage
 
 // Test
-//#define interruptPin 2  // Used for Demo1
+#define interruptPin 2  // Used for Demo1
 
 const int ledPin = 6;
 boolean isLedOn = false;
@@ -80,8 +80,6 @@ boolean isLedOn = false;
 String inputString = "";         // a string to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 String commandString = "";
-
-//const int buttonPin = A1;
 
 void setup() 
 {  
@@ -97,8 +95,8 @@ void setup()
 
   pinMode(buttonPin, INPUT);  // or use INPUT_PULLUP (pull down resistor)
   
-  //pinMode(interruptPin, INPUT_PULLUP);
-  //attachInterrupt(digitalPinToInterrupt(interruptPin), ButtonClickedISR, CHANGE); 
+  pinMode(interruptPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin), ButtonClickedISR, CHANGE); 
   
   //initDisplay();
   Serial.println("Connected");
@@ -110,7 +108,7 @@ void setup()
 
 void loop() 
 { 
-  ButtonDemo();
+  //ButtonDemo();
   CheckActions();
   PrintVoltage();
 }
@@ -252,7 +250,13 @@ void Demo1()
   ZetGeluidAanUit();
 
   // Linker arm servo laten bewegen
-  Linkerarm(); 
+  Linkerarm();
+
+  // Rechter arm servo laten bewegen
+  Rechterarm();
+
+  // Nek helemaal omhoog
+  Nek();
 
   // Hoofd laten bewegen
   Hoofd();
@@ -260,6 +264,61 @@ void Demo1()
   // Ogen laten bewegen
   Ogen();
 
+  // Led ogen uit
+  analogWrite(ledPin, 0);
+
+  // Motoren laten draaien
+  Motoren();
+
+  // Geluid uit
+  ZetGeluidAanUit();
+}
+
+void Linkerarm()
+{
+  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 1000, 2);
+  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 600, 2);
+  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 1000, 2);
+  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 600, 2);
+  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 1000, 2);  
+}
+
+void Rechterarm()
+{
+  s2LastPos = ServoPWMRange(SERVO1, s2LastPos, 1000, 2);
+  s2LastPos = ServoPWMRange(SERVO1, s2LastPos, 600, 2);
+  s2LastPos = ServoPWMRange(SERVO1, s2LastPos, 1000, 2);
+  s2LastPos = ServoPWMRange(SERVO1, s2LastPos, 600, 2);
+  s2LastPos = ServoPWMRange(SERVO1, s2LastPos, 1000, 2);  
+}
+
+void Hoofd()
+{
+  s3LastPos = ServoPWMRange(SERVO3, s3LastPos, 200, 2);
+  s3LastPos = ServoPWMRange(SERVO3, s3LastPos, 800, 2);
+  s3LastPos = ServoPWMRange(SERVO3, s3LastPos, 512, 2);  
+}
+
+void Nek()
+{
+  s4LastPos = ServoPWMRange(SERVO4, s4LastPos, 800, 2);
+  s5LastPos = ServoPWMRange(SERVO5, s5LastPos, 800, 2);
+  delay(500);
+  s4LastPos = ServoPWMRange(SERVO4, s4LastPos, 0, 2);
+  s5LastPos = ServoPWMRange(SERVO5, s5LastPos, 0, 2);  
+}
+
+void Ogen()
+{
+  s6LastPos = ServoPWMRange(SERVO6, s6LastPos, 750, 2);
+  s7LastPos = ServoPWMRange(SERVO7, s7LastPos, 250, 2);
+  delay(1000);
+  s6LastPos = ServoPWMRange(SERVO6, s6LastPos, 450, 2);
+  s7LastPos = ServoPWMRange(SERVO7, s7LastPos, 600, 2);    
+}
+
+void Motoren()
+{
   // Zet de motorsnelheid
   analogWrite(enAB, 150);
 
@@ -275,37 +334,7 @@ void Demo1()
   MotorControl("RECHTS");
   delay(1500);
   MotorControl("STOP");
-
-  // Led ogen uit
-  analogWrite(ledPin, 0);
-
-  // Geluid uit
-  ZetGeluidAanUit();
-}
-
-void Linkerarm()
-{
-  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 1000, 2);
-  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 600, 2);
-  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 1000, 2);
-  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 600, 2);
-  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 1000, 2);  
-}
-
-void Hoofd()
-{
-  s3LastPos = ServoPWMRange(SERVO3, s3LastPos, 200, 2);
-  s3LastPos = ServoPWMRange(SERVO3, s3LastPos, 800, 2);
-  s3LastPos = ServoPWMRange(SERVO3, s3LastPos, 512, 2);  
-}
-
-void Ogen()
-{
-  s6LastPos = ServoPWMRange(SERVO6, s6LastPos, 750, 2);
-  s7LastPos = ServoPWMRange(SERVO7, s7LastPos, 250, 2);
-  delay(1000);
-  s6LastPos = ServoPWMRange(SERVO6, s6LastPos, 450, 2);
-  s7LastPos = ServoPWMRange(SERVO7, s7LastPos, 600, 2);    
+  Rechterarm();
 }
 
 void PrintText(String melding)
