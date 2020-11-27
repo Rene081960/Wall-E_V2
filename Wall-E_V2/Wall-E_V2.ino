@@ -36,15 +36,16 @@ boolean isPlaying = false;
 #define SERVO7 6
 
 // Motor A
-#define enAB 9
+#define enA 9
 #define in1 8
 #define in2 7
 
 // Motor B
+#define enB 3
 #define in3 5
 #define in4 4
 
-#define buttonPin 2
+//#define buttonPin 2
 int buttonState = 0; 
 
 // Servo's last position
@@ -93,10 +94,10 @@ void setup()
   
   pinMode(ledPin,OUTPUT);
 
-  pinMode(buttonPin, INPUT);  // or use INPUT_PULLUP (pull down resistor)
+  //pinMode(buttonPin, INPUT);  // or use INPUT_PULLUP (pull down resistor)
   
   pinMode(interruptPin, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin), ButtonClickedISR, CHANGE); 
+  //attachInterrupt(digitalPinToInterrupt(interruptPin), ButtonClickedISR, FALLING); 
   
   //initDisplay();
   Serial.println("Connected");
@@ -108,7 +109,7 @@ void setup()
 
 void loop() 
 { 
-  //ButtonDemo();
+  ButtonDemo();
   CheckActions();
   PrintVoltage();
 }
@@ -200,7 +201,8 @@ void CheckActions()
     }   
     else if(commandString.equals("SNEL"))
     {
-      MotorSpeed(enAB);
+      MotorSpeed(enA);
+      MotorSpeed(enB);
     } 
     else if(commandString.equals("VOLU"))
     {
@@ -230,7 +232,7 @@ void InitializeWallE()
 void ButtonDemo()
 { 
   // read the state of the pushbutton value:
-   buttonState = digitalRead(buttonPin);
+   buttonState = digitalRead(interruptPin);
 
    // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
    if (buttonState == LOW) 
@@ -285,11 +287,11 @@ void Linkerarm()
 
 void Rechterarm()
 {
-  s2LastPos = ServoPWMRange(SERVO1, s2LastPos, 1000, 2);
-  s2LastPos = ServoPWMRange(SERVO1, s2LastPos, 600, 2);
-  s2LastPos = ServoPWMRange(SERVO1, s2LastPos, 1000, 2);
-  s2LastPos = ServoPWMRange(SERVO1, s2LastPos, 600, 2);
-  s2LastPos = ServoPWMRange(SERVO1, s2LastPos, 1000, 2);  
+  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 600, 2);
+  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 1000, 2);
+  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 600, 2);
+  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 1000, 2);
+  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 600, 2);  
 }
 
 void Hoofd()
@@ -304,8 +306,8 @@ void Nek()
   s4LastPos = ServoPWMRange(SERVO4, s4LastPos, 800, 2);
   s5LastPos = ServoPWMRange(SERVO5, s5LastPos, 800, 2);
   delay(500);
-  s4LastPos = ServoPWMRange(SERVO4, s4LastPos, 0, 2);
-  s5LastPos = ServoPWMRange(SERVO5, s5LastPos, 0, 2);  
+  s5LastPos = ServoPWMRange(SERVO5, s5LastPos, 0, 2); 
+  s4LastPos = ServoPWMRange(SERVO4, s4LastPos, 0, 2);  
 }
 
 void Ogen()
@@ -320,7 +322,8 @@ void Ogen()
 void Motoren()
 {
   // Zet de motorsnelheid
-  analogWrite(enAB, 150);
+  analogWrite(enA, 150);
+  analogWrite(enB, 150);
 
   // motoren laten draaien
   MotorControl("VOOR");
