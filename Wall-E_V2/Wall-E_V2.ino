@@ -266,11 +266,11 @@ void Demo1()
   // Ogen laten bewegen
   Ogen();
 
-  // Led ogen uit
-  analogWrite(ledPin, 0);
-
   // Motoren laten draaien
   Motoren();
+
+  // Led ogen uit
+  analogWrite(ledPin, 0);  
 
   // Geluid uit
   ZetGeluidAanUit();
@@ -279,19 +279,19 @@ void Demo1()
 void Linkerarm()
 {
   s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 1000, 2);
-  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 600, 2);
+  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 400, 2);
   s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 1000, 2);
-  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 600, 2);
+  s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 400, 2);
   s1LastPos = ServoPWMRange(SERVO1, s1LastPos, 1000, 2);  
 }
 
 void Rechterarm()
 {
-  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 600, 2);
-  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 1000, 2);
-  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 600, 2);
-  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 1000, 2);
-  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 600, 2);  
+  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 200, 2);
+  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 800, 2);
+  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 200, 2);
+  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 800, 2);
+  s2LastPos = ServoPWMRange(SERVO2, s2LastPos, 200, 2);  
 }
 
 void Hoofd()
@@ -305,7 +305,12 @@ void Nek()
 {
   s4LastPos = ServoPWMRange(SERVO4, s4LastPos, 800, 2);
   s5LastPos = ServoPWMRange(SERVO5, s5LastPos, 800, 2);
-  delay(500);
+  
+  // Draai hoofd
+  s3LastPos = ServoPWMRange(SERVO3, s3LastPos, 200, 2);
+  s3LastPos = ServoPWMRange(SERVO3, s3LastPos, 800, 2);
+  s3LastPos = ServoPWMRange(SERVO3, s3LastPos, 512, 2);
+  
   s5LastPos = ServoPWMRange(SERVO5, s5LastPos, 0, 2); 
   s4LastPos = ServoPWMRange(SERVO4, s4LastPos, 0, 2);  
 }
